@@ -1,9 +1,11 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 
 export default function UploadPage() {
+  const router = useRouter()
   const [file, setFile] = useState<File | null>(null)
   const [status, setStatus] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
@@ -40,11 +42,20 @@ export default function UploadPage() {
       return
     }
 
-    setStatus(`Done — ${result.count} biomarkers extracted.`)
+    router.push('/')
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-950">
+    <div className="min-h-screen bg-zinc-950">
+      <div className="px-4 py-4">
+        <button
+          onClick={() => router.push('/')}
+          className="text-sm text-zinc-500 hover:text-zinc-100"
+        >
+          ← Back
+        </button>
+      </div>
+      <div className="flex items-center justify-center px-4 pb-12">
       <div className="w-full max-w-sm rounded-lg bg-zinc-900 p-8 border border-zinc-800">
         <h1 className="mb-6 text-xl font-semibold text-zinc-100">Upload a lab report</h1>
 
@@ -70,6 +81,7 @@ export default function UploadPage() {
             {status}
           </p>
         )}
+      </div>
       </div>
     </div>
   )
