@@ -29,7 +29,7 @@ export default function AuthPage() {
       return
     }
 
-    router.push('/upload')
+    router.push('/')
   }
 
   return (
