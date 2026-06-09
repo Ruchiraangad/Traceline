@@ -59,10 +59,10 @@ Traceline
 
 ## Current Build Status
 <!-- BEGIN STATE -->
-Status: MVP complete
+Status: Deployed
 Last session: 2026-06-09
 Working on: —
-Next step: Deploy to Vercel, then post-MVP features
+Next step: Post-MVP features
 Blocked: Nothing
 <!-- END STATE -->
 
