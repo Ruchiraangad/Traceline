@@ -59,12 +59,24 @@ Traceline
 
 ## Current Build Status
 <!-- BEGIN STATE -->
-Status: Project not yet initialized
-Last session: —
-Working on: Stack decisions made, CLAUDE.md being created
-Next step: Initialize Next.js project, connect Supabase, scaffold folder structure
-Blocked: Nothing yet
+Status: In progress — end-to-end pipeline built, debugging first upload attempt
+Last session: 2026-06-09
+Working on: First real upload test — hitting a 500 on /api/upload
+Next step: Fix the 500 error on upload, then sign up via /auth and test full pipeline
+Blocked: Runtime crash in upload route (likely pdf-parse or auth check)
 <!-- END STATE -->
+
+## What's Been Built
+- Next.js project initialized with TypeScript, Tailwind, ESLint
+- Dependencies installed: @anthropic-ai/sdk, @supabase/supabase-js, pdf-parse
+- Supabase project created, tables created (uploads, biomarkers), RLS enabled
+- lib/supabase.ts — Supabase client
+- lib/extract.ts — Claude API call to extract biomarkers from PDF text
+- types/database.ts — TypeScript types matching Supabase schema
+- app/api/upload/route.ts — POST endpoint: auth check → pdf-parse → Claude → Supabase insert
+- app/auth/page.tsx — Email/password sign in / sign up
+- app/upload/page.tsx — File picker UI that posts to /api/upload with Bearer token
+- pdf-parse v2 uses class-based API (PDFParse, not a function)
 
 ## MVP Scope (Build This First, Nothing Else)
 1. User auth (Supabase handles this)

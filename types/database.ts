@@ -6,7 +6,7 @@ export type BiomarkerRow = {
   value: number
   unit: string
   reference_range: string | null
-  tested_at: string
+  tested_at: string | null
   created_at: string
 }
 
@@ -17,7 +17,7 @@ export type BiomarkerInsert = {
   value: number
   unit: string
   reference_range: string | null
-  tested_at: string
+  tested_at: string | null
 }
 
 export type UploadRow = {

@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { PDFParse } from 'pdf-parse'
 import { extractBiomarkers } from '@/lib/extract'
 import type { Database } from '@/types/database'
 
@@ -33,16 +32,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'File must be a PDF' }, { status: 400 })
   }
 
-  // Extract raw text from the PDF binary
+  // Pass the PDF buffer directly to Claude — no text extraction step needed
   const buffer = Buffer.from(await file.arrayBuffer())
-  const parser = new PDFParse({ data: buffer })
-  const { text } = await parser.getText()
-  if (!text.trim()) {
-    return NextResponse.json({ error: 'Could not extract text from PDF' }, { status: 422 })
-  }
-
-  // Ask Claude to find and structure the biomarkers in the text
-  const biomarkers = await extractBiomarkers(text)
+  const biomarkers = await extractBiomarkers(buffer)
   if (biomarkers.length === 0) {
     return NextResponse.json({ error: 'No biomarkers found in this PDF' }, { status: 422 })
   }
@@ -74,7 +66,9 @@ export async function POST(request: NextRequest) {
     .insert(rows)
 
   if (biomarkerError) {
-    return NextResponse.json({ error: 'Failed to save biomarkers' }, { status: 500 })
+    console.error('Biomarker insert error:', biomarkerError)
+    console.error('Rows attempted:', JSON.stringify(rows, null, 2))
+    return NextResponse.json({ error: 'Failed to save biomarkers', detail: biomarkerError.message }, { status: 500 })
   }
 
   return NextResponse.json({ upload_id: upload.id, count: biomarkers.length })
