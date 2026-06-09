@@ -48,8 +48,10 @@ If no date is found in the report, use null for tested_at.`,
   })
 
   const raw = response.content[0].type === 'text' ? response.content[0].text : ''
-  const text = raw.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '').trim()
-  const parsed = JSON.parse(text)
+  // Strip markdown fences, then fall back to extracting the first JSON array found in the response
+  const stripped = raw.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '').trim()
+  const match = stripped.startsWith('[') ? stripped : stripped.match(/\[[\s\S]*\]/)?.[0] ?? stripped
+  const parsed = JSON.parse(match)
 
   if (!Array.isArray(parsed)) {
     throw new Error('Claude did not return an array')
