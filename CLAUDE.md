@@ -59,24 +59,31 @@ Traceline
 
 ## Current Build Status
 <!-- BEGIN STATE -->
-Status: In progress — end-to-end pipeline built, debugging first upload attempt
+Status: MVP complete
 Last session: 2026-06-09
-Working on: First real upload test — hitting a 500 on /api/upload
-Next step: Fix the 500 error on upload, then sign up via /auth and test full pipeline
-Blocked: Runtime crash in upload route (likely pdf-parse or auth check)
+Working on: —
+Next step: Deploy to Vercel, then post-MVP features
+Blocked: Nothing
 <!-- END STATE -->
 
 ## What's Been Built
-- Next.js project initialized with TypeScript, Tailwind, ESLint
-- Dependencies installed: @anthropic-ai/sdk, @supabase/supabase-js, pdf-parse
-- Supabase project created, tables created (uploads, biomarkers), RLS enabled
-- lib/supabase.ts — Supabase client
-- lib/extract.ts — Claude API call to extract biomarkers from PDF text
-- types/database.ts — TypeScript types matching Supabase schema
-- app/api/upload/route.ts — POST endpoint: auth check → pdf-parse → Claude → Supabase insert
-- app/auth/page.tsx — Email/password sign in / sign up
-- app/upload/page.tsx — File picker UI that posts to /api/upload with Bearer token
-- pdf-parse v2 uses class-based API (PDFParse, not a function)
+- Next.js project initialized with TypeScript, Tailwind, ESLint, App Router
+- Dependencies: @anthropic-ai/sdk, @supabase/supabase-js, pdf-parse, recharts
+- Supabase project: uploads + biomarkers tables, RLS with user-scoped policies
+- lib/supabase.ts — typed Supabase client
+- lib/extract.ts — sends PDF buffer directly to Claude as a document, parses JSON response
+- types/database.ts — TypeScript types satisfying Supabase's GenericSchema constraint
+- app/api/upload/route.ts — auth → receive PDF → Claude extraction → Supabase insert
+- app/auth/page.tsx — email/password sign in / sign up with mode toggle
+- app/upload/page.tsx — file picker, posts with Bearer token, redirects to dashboard on success
+- app/page.tsx — authenticated dashboard, lists uploads with timestamps and biomarker counts
+- app/chart/page.tsx — all biomarker trend charts in a 2-column grid, sorted by data richness
+
+## Key Technical Decisions
+- Dropped pdf-parse text extraction in favour of Claude's native PDF document support — handles image-based and text-based PDFs equally
+- tested_at is nullable — some lab PDFs have no collection date
+- JSON parsing has two fallbacks: strip markdown fences, then regex-extract first [...] array in case Claude adds prose
+- serverExternalPackages includes pdf-parse to avoid Turbopack worker bundling issues
 
 ## MVP Scope (Build This First, Nothing Else)
 1. User auth (Supabase handles this)
