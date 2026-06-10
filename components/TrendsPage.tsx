@@ -100,9 +100,9 @@ export default function TrendsPage() {
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100">
-      <PageHeader title="Trends" backHref="/" maxWidthClassName="max-w-5xl" />
+      <PageHeader title="Trends" backHref="/" maxWidthClassName="max-w-3xl" />
 
-      <div className="mx-auto max-w-5xl px-4 py-12">
+      <div className="mx-auto max-w-3xl px-4 py-12">
 
         {groups.length === 0 ? (
           <Card className="p-12 text-center">

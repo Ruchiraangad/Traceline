@@ -77,8 +77,10 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100">
-      <div className="mx-auto max-w-2xl px-4 py-12 animate-fade-slide-in">
-        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      {/* Same border-b/bg chrome as PageHeader on the other pages, so the
+          top bar doesn't jump in height or width when navigating here. */}
+      <div className="border-b border-zinc-800 bg-zinc-900/50">
+        <div className="mx-auto max-w-3xl px-4 py-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <h1 className="text-2xl font-semibold">Traceline</h1>
           <div className="flex gap-3">
             <Button variant="secondary" loading={navigatingTo === 'trends'} onClick={() => navigate('trends', '/chart')}>
@@ -92,7 +94,9 @@ export default function DashboardPage() {
             </Button>
           </div>
         </div>
+      </div>
 
+      <div className="mx-auto max-w-3xl px-4 py-12 animate-fade-slide-in">
         {uploads.length === 0 ? (
           <Card className="p-12 text-center">
             <p className="text-zinc-500">No uploads yet.</p>
