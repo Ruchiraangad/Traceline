@@ -53,7 +53,7 @@ Traceline
 ## Architecture Rules
 - API routes live in `app/api/`
 - Reusable logic lives in `lib/` (e.g. `lib/extract.ts`, `lib/supabase.ts`)
-- React components live in `components/` — page-level components (e.g. `DashboardPage.tsx`, `TrendsPage.tsx`) live directly in `components/`; shared UI primitives (`Button`, `Card`, `Input`, `ErrorState`, `ConfirmDialog`, `PageHeader`, `FileDropzone`) live in `components/ui/`
+- React components live in `components/` — page-level components (e.g. `DashboardPage.tsx`, `TrendsPage.tsx`) live directly in `components/`; shared UI primitives (`Button`, `Card`, `Input`, `ErrorState`, `ConfirmDialog`, `PageHeader`, `FileDropzone`, `AuthLayout`) live in `components/ui/`
 - Database types live in `types/`
 - Never put business logic directly in a React component
 
@@ -88,6 +88,10 @@ Blocked: Nothing
 - components/ui/PageHeader.tsx — shared back-button + centered title header bar (parameterized by `title`, `backHref`, `maxWidthClassName`); replaces the header markup that had been copy-pasted in TrendsPage and UploadDetailPage
 - components/UploadPage.tsx + app/upload/page.tsx — extracted to match the page-level component pattern; checks auth on mount (redirects to /auth like other pages), supports selecting and uploading multiple files sequentially against the existing single-file /api/upload route, and shows a "✓ Done — N biomarkers found across N files" summary before redirecting to the dashboard
 - Mobile-responsive pass: AuthForm's card no longer touches the screen edges (`px-4` on its wrapper); DashboardPage's header stacks the title above the nav buttons below `sm:`; UploadPage's card uses tighter padding (`p-6 sm:p-8`) on small screens; UploadDetailPage's filename/Delete-upload row stacks and truncates the filename instead of overflowing, and its biomarkers table is replaced below `sm:` by a stacked card list (`sm:hidden` list + `hidden sm:table` table, same data). TrendsPage's `grid-cols-1 sm:grid-cols-2` chart grid was already responsive and needed no changes
+- components/AuthForm.tsx — now a three-mode form (`signin` / `signup` / `forgot`): sign-up adds a "Confirm password" field validated against `password` before calling `signUp`; sign-up success no longer navigates away — it switches back to sign-in mode with an info message asking the user to sign in with their new credentials; a "Forgot password?" link (sign-in only) switches to a forgot-password mode that calls `supabase.auth.resetPasswordForEmail()`
+- components/ResetPasswordForm.tsx + app/auth/reset-password/page.tsx — page the password-reset email links to; waits for Supabase's `PASSWORD_RECOVERY` auth event (or an existing session) to confirm the recovery link is valid, then shows a new-password + confirm-password form that calls `supabase.auth.updateUser({ password })`; shows an "invalid or expired link" message if no recovery session appears within 3 seconds
+- components/ui/AuthLayout.tsx — shared gradient background + logo card wrapper extracted from AuthForm, now used by both AuthForm and ResetPasswordForm
+- app/globals.css — added a `fade-slide-in` keyframe and `animate-fade-slide-in` utility (Tailwind v4 `@theme` block); AuthForm's content div is keyed on `mode` so switching between sign-in/sign-up/forgot replays the animation
 
 ## Key Technical Decisions
 - Dropped pdf-parse text extraction in favour of Claude's native PDF document support — handles image-based and text-based PDFs equally
@@ -103,6 +107,10 @@ Blocked: Nothing
 - On the upload page, "Upload" only (re)submits files that haven't reached `success` status yet — a partial failure (e.g. one PDF with no extractable biomarkers) can be retried without re-inserting files that already succeeded
 - The 32MB client-side file size cap in FileDropzone matches the PDF size limit for documents sent to the Claude API
 - A table that's too cramped on narrow screens (the upload-detail biomarkers table) gets a parallel `sm:hidden` card-list view rather than horizontal scrolling — both render from the same data, with `hidden`/`sm:table`/`sm:hidden` controlling which is visible per breakpoint
+- Forgot-password shows the same "if an account exists, a reset link is on its way" message regardless of whether `resetPasswordForEmail` succeeds or the email is registered — prevents using the form to enumerate registered emails
+- Sign-up's success path resets `loading` back to `false` (unlike sign-in's) — the form stays mounted and switches modes instead of navigating away, so the button must return to its idle state
+- Pending manual step: `/auth/reset-password` (both `http://localhost:3000/auth/reset-password` and the deployed URL) needs to be added to Supabase's Authentication → URL Configuration → Redirect URLs allow-list, or the password-reset email link won't work. Not yet done as of 2026-06-10
+- Tailwind v4 `--animate-*` tokens added to `app/globals.css` aren't picked up by Turbopack's dev server until it's restarted — if a new `animate-*` utility doesn't apply, restart `next dev` before debugging the CSS itself
 
 ## MVP Scope (Build This First, Nothing Else)
 1. User auth (Supabase handles this)
