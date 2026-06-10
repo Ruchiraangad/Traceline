@@ -17,13 +17,13 @@ Every lab PDF is formatted differently. Quest, LabCorp, and hospital systems eac
 ```
 User uploads PDF
       ↓
-Extract raw text from PDF (pdf-parse)
+Send PDF directly to Claude API as a document (no separate text extraction)
       ↓
-Send text to Claude API with extraction prompt
+Claude returns structured JSON: { biomarker, value, unit, reference_range, tested_at }
       ↓
-Claude returns structured JSON: { biomarker, value, unit, reference_range, date }
+Validate each biomarker individually with zod; drop and log any that don't match
       ↓
-Validate and store rows in Postgres (via Supabase)
+Store valid rows in Postgres (via Supabase)
       ↓
 Frontend queries and renders trend charts (Recharts)
 ```
@@ -32,7 +32,7 @@ Frontend queries and renders trend charts (Recharts)
 - **Framework:** Next.js (App Router) — frontend and backend API routes in one repo
 - **Language:** TypeScript
 - **Database:** Supabase (Postgres) — also handles user auth
-- **AI:** Claude API (claude-sonnet-4-20250514) for PDF extraction
+- **AI:** Claude API (claude-sonnet-4-6) for PDF extraction
 - **PDF parsing:** pdf-parse (Node library, extracts raw text)
 - **Charts:** Recharts
 - **Hosting:** Vercel
@@ -53,16 +53,16 @@ Traceline
 ## Architecture Rules
 - API routes live in `app/api/`
 - Reusable logic lives in `lib/` (e.g. `lib/extract.ts`, `lib/supabase.ts`)
-- React components live in `components/`
+- React components live in `components/` — page-level components (e.g. `DashboardPage.tsx`, `TrendsPage.tsx`) live directly in `components/`; shared UI primitives (`Button`, `Card`, `Input`, `ErrorState`, `ConfirmDialog`) live in `components/ui/`
 - Database types live in `types/`
 - Never put business logic directly in a React component
 
 ## Current Build Status
 <!-- BEGIN STATE -->
 Status: Deployed
-Last session: 2026-06-09
+Last session: 2026-06-10
 Working on: —
-Next step: Post-MVP features
+Next step: Pick next post-MVP feature (see linkedin.txt "What's Next")
 Blocked: Nothing
 <!-- END STATE -->
 
@@ -78,12 +78,20 @@ Blocked: Nothing
 - app/upload/page.tsx — file picker, posts with Bearer token, redirects to dashboard on success
 - app/page.tsx — authenticated dashboard, lists uploads with timestamps and biomarker counts
 - app/chart/page.tsx — all biomarker trend charts in a 2-column grid, sorted by data richness
+- components/ui/ — shared UI primitives: Button (variant prop: primary/secondary/ghost/link/danger), Card, Input, ErrorState (with retry), ConfirmDialog
+- components/DashboardPage.tsx, TrendsPage.tsx, AuthForm.tsx — page-level components (app/*/page.tsx are now thin wrappers around these); dashboard and trends show an error state with retry on a failed Supabase query
+- components/UploadDetailPage.tsx + app/uploads/[id]/page.tsx — per-upload page listing its biomarkers, with a delete flow (removes the upload and its biomarker rows, with confirmation)
+- lib/extract.ts — biomarkers are validated individually against a zod schema; malformed entries are logged and dropped instead of discarding the whole batch
 
 ## Key Technical Decisions
 - Dropped pdf-parse text extraction in favour of Claude's native PDF document support — handles image-based and text-based PDFs equally
 - tested_at is nullable — some lab PDFs have no collection date
 - JSON parsing has two fallbacks: strip markdown fences, then regex-extract first [...] array in case Claude adds prose
 - serverExternalPackages includes pdf-parse to avoid Turbopack worker bundling issues
+- Biomarker validation is per-item, not per-array — one malformed entry (e.g. an empty `unit` on a dimensionless result like a ratio) is logged and dropped rather than rejecting the whole extraction
+- `unit` accepts an empty string — some results (ratios, pH) are genuinely unitless, and the database column doesn't require non-empty
+- Destructive actions (deleting an upload) use a custom ConfirmDialog, not the browser's `confirm()`
+- Deleting an upload removes its `biomarkers` rows before the `uploads` row — no DB-level cascade is assumed
 
 ## MVP Scope (Build This First, Nothing Else)
 1. User auth (Supabase handles this)
