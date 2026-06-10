@@ -87,6 +87,7 @@ Blocked: Nothing
 - components/ui/FileDropzone.tsx — drag-and-drop + click-to-browse zone for multiple PDFs; rejects non-PDF files and files over 32MB client-side, and renders per-file status (uploading spinner / success checkmark with biomarker count / error message) via a `statuses` prop
 - components/ui/PageHeader.tsx — shared back-button + centered title header bar (parameterized by `title`, `backHref`, `maxWidthClassName`); replaces the header markup that had been copy-pasted in TrendsPage and UploadDetailPage
 - components/UploadPage.tsx + app/upload/page.tsx — extracted to match the page-level component pattern; checks auth on mount (redirects to /auth like other pages), supports selecting and uploading multiple files sequentially against the existing single-file /api/upload route, and shows a "✓ Done — N biomarkers found across N files" summary before redirecting to the dashboard
+- Mobile-responsive pass: AuthForm's card no longer touches the screen edges (`px-4` on its wrapper); DashboardPage's header stacks the title above the nav buttons below `sm:`; UploadPage's card uses tighter padding (`p-6 sm:p-8`) on small screens; UploadDetailPage's filename/Delete-upload row stacks and truncates the filename instead of overflowing, and its biomarkers table is replaced below `sm:` by a stacked card list (`sm:hidden` list + `hidden sm:table` table, same data). TrendsPage's `grid-cols-1 sm:grid-cols-2` chart grid was already responsive and needed no changes
 
 ## Key Technical Decisions
 - Dropped pdf-parse text extraction in favour of Claude's native PDF document support — handles image-based and text-based PDFs equally
@@ -101,6 +102,7 @@ Blocked: Nothing
 - Multi-file upload reuses the existing single-file `/api/upload` route — the client loops and POSTs each file separately, so each PDF becomes its own `uploads` row. No backend changes were needed
 - On the upload page, "Upload" only (re)submits files that haven't reached `success` status yet — a partial failure (e.g. one PDF with no extractable biomarkers) can be retried without re-inserting files that already succeeded
 - The 32MB client-side file size cap in FileDropzone matches the PDF size limit for documents sent to the Claude API
+- A table that's too cramped on narrow screens (the upload-detail biomarkers table) gets a parallel `sm:hidden` card-list view rather than horizontal scrolling — both render from the same data, with `hidden`/`sm:table`/`sm:hidden` controlling which is visible per breakpoint
 
 ## MVP Scope (Build This First, Nothing Else)
 1. User auth (Supabase handles this)

@@ -111,9 +111,9 @@ export default function UploadDetailPage({ uploadId }: UploadDetailPageProps) {
 
       <div className="mx-auto max-w-3xl px-4 py-12">
         <Card className="mb-6 bg-zinc-900 p-5">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <p className="font-medium text-zinc-100">{upload.filename}</p>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div className="min-w-0 sm:flex-1">
+              <p className="truncate font-medium text-zinc-100">{upload.filename}</p>
               <p className="mt-1 text-xs text-zinc-500">
                 Uploaded{' '}
                 {new Date(upload.uploaded_at).toLocaleDateString('en-US', {
@@ -141,7 +141,23 @@ export default function UploadDetailPage({ uploadId }: UploadDetailPageProps) {
           </Card>
         ) : (
           <Card className="overflow-hidden">
-            <table className="w-full text-sm">
+            {/* Below sm: one stacked card per biomarker — a 4-column table is too cramped on narrow screens. */}
+            <ul className="sm:hidden">
+              {biomarkers.map(b => (
+                <li key={b.id} className="border-b border-zinc-900 px-4 py-3 last:border-0">
+                  <div className="flex items-baseline justify-between gap-3">
+                    <p className="text-zinc-100">{b.biomarker}</p>
+                    <p className="shrink-0 whitespace-nowrap font-medium text-zinc-100">{b.value} {b.unit}</p>
+                  </div>
+                  <div className="mt-1 flex items-baseline justify-between gap-3 text-xs text-zinc-500">
+                    <p>{b.reference_range ? `Range: ${b.reference_range}` : '—'}</p>
+                    <p className="shrink-0">{b.tested_at ?? upload.uploaded_at.slice(0, 10)}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+
+            <table className="hidden w-full text-sm sm:table">
               <thead>
                 <tr className="border-b border-zinc-800 text-left text-xs text-zinc-500">
                   <th className="px-4 py-2 font-medium">Biomarker</th>
