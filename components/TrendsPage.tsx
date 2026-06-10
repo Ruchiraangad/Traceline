@@ -3,9 +3,9 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
-import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
 import ErrorState from '@/components/ui/ErrorState'
+import PageHeader from '@/components/ui/PageHeader'
 import {
   LineChart,
   Line,
@@ -54,7 +54,6 @@ export default function TrendsPage() {
   const [error, setError] = useState<string | null>(null)
   // Bumping this re-runs the effect below — used by ErrorState's retry button.
   const [retryCount, setRetryCount] = useState(0)
-  const [navigatingBack, setNavigatingBack] = useState(false)
 
   useEffect(() => {
     async function load() {
@@ -101,18 +100,7 @@ export default function TrendsPage() {
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100">
-      <div className="border-b border-zinc-800 bg-zinc-900/50">
-        <div className="mx-auto max-w-5xl px-4 py-3 flex items-center justify-between">
-          <Button variant="ghost" className="flex items-center gap-2" loading={navigatingBack} onClick={() => { setNavigatingBack(true); router.push('/') }}>
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            Back
-          </Button>
-          <h1 className="text-lg font-semibold">Trends</h1>
-          <div className="w-16" />
-        </div>
-      </div>
+      <PageHeader title="Trends" backHref="/" maxWidthClassName="max-w-5xl" />
 
       <div className="mx-auto max-w-5xl px-4 py-12">
 

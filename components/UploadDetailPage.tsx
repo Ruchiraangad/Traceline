@@ -7,6 +7,7 @@ import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
 import ErrorState from '@/components/ui/ErrorState'
+import PageHeader from '@/components/ui/PageHeader'
 import type { UploadRow, BiomarkerRow } from '@/types/database'
 
 type UploadDetailPageProps = {
@@ -24,7 +25,6 @@ export default function UploadDetailPage({ uploadId }: UploadDetailPageProps) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   // Bumping this re-runs the effect below — used by ErrorState's retry button.
   const [retryCount, setRetryCount] = useState(0)
-  const [navigatingBack, setNavigatingBack] = useState(false)
 
   useEffect(() => {
     async function load() {
@@ -107,18 +107,7 @@ export default function UploadDetailPage({ uploadId }: UploadDetailPageProps) {
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100">
-      <div className="border-b border-zinc-800 bg-zinc-900/50">
-        <div className="mx-auto max-w-3xl px-4 py-3 flex items-center justify-between">
-          <Button variant="ghost" className="flex items-center gap-2" loading={navigatingBack} onClick={() => { setNavigatingBack(true); router.push('/') }}>
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            Back
-          </Button>
-          <h1 className="text-lg font-semibold">Upload details</h1>
-          <div className="w-16" />
-        </div>
-      </div>
+      <PageHeader title="Upload details" backHref="/" maxWidthClassName="max-w-3xl" />
 
       <div className="mx-auto max-w-3xl px-4 py-12">
         <Card className="mb-6 bg-zinc-900 p-5">

@@ -53,7 +53,7 @@ Traceline
 ## Architecture Rules
 - API routes live in `app/api/`
 - Reusable logic lives in `lib/` (e.g. `lib/extract.ts`, `lib/supabase.ts`)
-- React components live in `components/` — page-level components (e.g. `DashboardPage.tsx`, `TrendsPage.tsx`) live directly in `components/`; shared UI primitives (`Button`, `Card`, `Input`, `ErrorState`, `ConfirmDialog`) live in `components/ui/`
+- React components live in `components/` — page-level components (e.g. `DashboardPage.tsx`, `TrendsPage.tsx`) live directly in `components/`; shared UI primitives (`Button`, `Card`, `Input`, `ErrorState`, `ConfirmDialog`, `PageHeader`, `FileDropzone`) live in `components/ui/`
 - Database types live in `types/`
 - Never put business logic directly in a React component
 
@@ -75,7 +75,6 @@ Blocked: Nothing
 - types/database.ts — TypeScript types satisfying Supabase's GenericSchema constraint
 - app/api/upload/route.ts — auth → receive PDF → Claude extraction → Supabase insert
 - app/auth/page.tsx — email/password sign in / sign up with mode toggle
-- app/upload/page.tsx — file picker, posts with Bearer token, redirects to dashboard on success
 - app/page.tsx — authenticated dashboard, lists uploads with timestamps and biomarker counts
 - app/chart/page.tsx — all biomarker trend charts in a 2-column grid, sorted by data richness
 - components/ui/ — shared UI primitives: Button (variant prop: primary/secondary/ghost/link/danger), Card, Input, ErrorState (with retry), ConfirmDialog
@@ -85,6 +84,9 @@ Blocked: Nothing
 - components/ui/Button.tsx — `loading` prop shows a centered spinner in place of the label (label kept via `invisible` so the button doesn't resize); `disabled:opacity-50 disabled:cursor-not-allowed` now applied consistently across all variants
 - components/ui/ProgressBar.tsx — thin indeterminate progress bar (custom `animate-progress-indeterminate` keyframe in app/globals.css)
 - Loading feedback added to every async/navigation button: sign in/up, dashboard nav (Trends/Upload/Sign out), back buttons, delete confirmation; upload page shows the progress bar + "Retrieving your data..." while Claude extracts biomarkers
+- components/ui/FileDropzone.tsx — drag-and-drop + click-to-browse zone for multiple PDFs; rejects non-PDF files and files over 32MB client-side, and renders per-file status (uploading spinner / success checkmark with biomarker count / error message) via a `statuses` prop
+- components/ui/PageHeader.tsx — shared back-button + centered title header bar (parameterized by `title`, `backHref`, `maxWidthClassName`); replaces the header markup that had been copy-pasted in TrendsPage and UploadDetailPage
+- components/UploadPage.tsx + app/upload/page.tsx — extracted to match the page-level component pattern; checks auth on mount (redirects to /auth like other pages), supports selecting and uploading multiple files sequentially against the existing single-file /api/upload route, and shows a "✓ Done — N biomarkers found across N files" summary before redirecting to the dashboard
 
 ## Key Technical Decisions
 - Dropped pdf-parse text extraction in favour of Claude's native PDF document support — handles image-based and text-based PDFs equally
@@ -96,6 +98,9 @@ Blocked: Nothing
 - Destructive actions (deleting an upload) use a custom ConfirmDialog, not the browser's `confirm()`
 - Deleting an upload removes its `biomarkers` rows before the `uploads` row — no DB-level cascade is assumed
 - A button's `loading` state must NOT be cleared before a successful `router.push` — clearing it first causes a visible flash back to the idle label right before navigation. Only reset loading state on error paths; on success let it persist until the page unmounts
+- Multi-file upload reuses the existing single-file `/api/upload` route — the client loops and POSTs each file separately, so each PDF becomes its own `uploads` row. No backend changes were needed
+- On the upload page, "Upload" only (re)submits files that haven't reached `success` status yet — a partial failure (e.g. one PDF with no extractable biomarkers) can be retried without re-inserting files that already succeeded
+- The 32MB client-side file size cap in FileDropzone matches the PDF size limit for documents sent to the Claude API
 
 ## MVP Scope (Build This First, Nothing Else)
 1. User auth (Supabase handles this)
