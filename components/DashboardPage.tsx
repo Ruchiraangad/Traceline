@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
 import ErrorState from '@/components/ui/ErrorState'
+import Logo from '@/components/ui/Logo'
 import type { UploadRow } from '@/types/database'
 
 type UploadWithCount = UploadRow & { biomarkers: { count: number }[] }
@@ -81,7 +82,13 @@ export default function DashboardPage() {
           top bar doesn't jump in height or width when navigating here. */}
       <div className="border-b border-zinc-800 bg-zinc-900/50">
         <div className="mx-auto max-w-3xl px-4 py-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <h1 className="text-2xl font-semibold">Traceline</h1>
+          <div className="flex items-center gap-3">
+            <Logo className="h-8 w-8" />
+            <div className="flex items-baseline font-heading">
+              <span className="text-2xl font-bold bg-gradient-to-r from-white to-zinc-300 bg-clip-text text-transparent">trace</span>
+              <span className="text-2xl font-bold text-zinc-600">line</span>
+            </div>
+          </div>
           <div className="flex gap-3">
             <Button variant="secondary" loading={navigatingTo === 'trends'} onClick={() => navigate('trends', '/chart')}>
               Trends

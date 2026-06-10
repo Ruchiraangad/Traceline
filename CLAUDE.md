@@ -53,7 +53,7 @@ Traceline
 ## Architecture Rules
 - API routes live in `app/api/`
 - Reusable logic lives in `lib/` (e.g. `lib/extract.ts`, `lib/supabase.ts`)
-- React components live in `components/` — page-level components (e.g. `DashboardPage.tsx`, `TrendsPage.tsx`) live directly in `components/`; shared UI primitives (`Button`, `Card`, `Input`, `ErrorState`, `ConfirmDialog`, `PageHeader`, `FileDropzone`, `AuthLayout`) live in `components/ui/`
+- React components live in `components/` — page-level components (e.g. `DashboardPage.tsx`, `TrendsPage.tsx`) live directly in `components/`; shared UI primitives (`Button`, `Card`, `Input`, `ErrorState`, `ConfirmDialog`, `PageHeader`, `FileDropzone`, `AuthLayout`, `Logo`) live in `components/ui/`
 - Database types live in `types/`
 - Never put business logic directly in a React component
 
@@ -92,6 +92,12 @@ Blocked: Nothing
 - components/ResetPasswordForm.tsx + app/auth/reset-password/page.tsx — page the password-reset email links to; waits for Supabase's `PASSWORD_RECOVERY` auth event (or an existing session) to confirm the recovery link is valid, then shows a new-password + confirm-password form that calls `supabase.auth.updateUser({ password })`; shows an "invalid or expired link" message if no recovery session appears within 3 seconds
 - components/ui/AuthLayout.tsx — shared gradient background + logo card wrapper extracted from AuthForm, now used by both AuthForm and ResetPasswordForm
 - app/globals.css — added a `fade-slide-in` keyframe and `animate-fade-slide-in` utility (Tailwind v4 `@theme` block); AuthForm's content div is keyed on `mode` so switching between sign-in/sign-up/forgot replays the animation
+- `animate-fade-slide-in` extended beyond AuthForm to DashboardPage, UploadPage, UploadDetailPage, and ResetPasswordForm — each page's content wrapper fades/slides in once loading finishes (ResetPasswordForm also keys on `status` like AuthForm keys on `mode`)
+- Standardized page width: TrendsPage, UploadPage, UploadDetailPage, and DashboardPage all use `max-w-3xl` for both `PageHeader` and their content wrapper, so the back button and content edges line up when navigating between pages
+- DashboardPage's header (logo/wordmark + Trends/Upload/Sign out buttons) moved into its own `border-b border-zinc-800 bg-zinc-900/50` bar — the same chrome `PageHeader` uses on the other pages — so the top of the page no longer changes height/width when landing on the dashboard
+- app/layout.tsx + app/globals.css — added Space Grotesk as a second font (`--font-space-grotesk` variable, exposed as the `font-heading` Tailwind utility); applied to `PageHeader`'s `<h1>`, DashboardPage's wordmark, and AuthLayout's wordmark
+- components/ui/Logo.tsx — SVG mark (circle + 4-pointed compass star) in a `bg-white` rounded-square badge with a zinc-900 icon, matching the app's existing white/zinc palette; used next to the "trace"/"line" wordmark on the dashboard only
+- AuthLayout's "trace"/"line" wordmark now uses `font-heading` with no gap between the two words, and has no logo/icon next to it
 
 ## Key Technical Decisions
 - Dropped pdf-parse text extraction in favour of Claude's native PDF document support — handles image-based and text-based PDFs equally
@@ -111,6 +117,9 @@ Blocked: Nothing
 - Sign-up's success path resets `loading` back to `false` (unlike sign-in's) — the form stays mounted and switches modes instead of navigating away, so the button must return to its idle state
 - The `/auth/reset-password` redirect URL is allow-listed in Supabase (Authentication → URL Configuration), and the forgot-password flow has been manually tested end-to-end (2026-06-10)
 - Tailwind v4 `--animate-*` tokens added to `app/globals.css` aren't picked up by Turbopack's dev server until it's restarted — if a new `animate-*` utility doesn't apply, restart `next dev` before debugging the CSS itself
+- TrendsPage keeps neither `animate-fade-slide-in` nor `isAnimationActive={false}` on `<Line>` — both were tried and reverted. Recharts' `<Line>` already animates its data line in over ~1.5s by default; layering a CSS fade on top of that made the chart area feel slower to appear, not faster
+- Logo (white badge + circle/star SVG) is dashboard-only — the auth page keeps just the wordmark, no icon. Logo colors are monochrome (white badge, zinc-900 icon) to match the app's existing palette rather than introduce a new accent color
+- `font-heading` (Space Grotesk) is applied only to page-title-level headings (`PageHeader`'s `<h1>`, Dashboard's wordmark, AuthLayout's wordmark) — body text stays on Geist Sans
 
 ## MVP Scope (Build This First, Nothing Else)
 1. User auth (Supabase handles this)

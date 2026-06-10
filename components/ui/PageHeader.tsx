@@ -30,7 +30,7 @@ export default function PageHeader({ title, backHref, maxWidthClassName = 'max-w
           </svg>
           Back
         </Button>
-        <h1 className="text-lg font-semibold">{title}</h1>
+        <h1 className="text-lg font-semibold font-heading">{title}</h1>
         <div className="w-16" />
       </div>
     </div>
