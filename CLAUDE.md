@@ -109,7 +109,7 @@ Blocked: Nothing
 - A table that's too cramped on narrow screens (the upload-detail biomarkers table) gets a parallel `sm:hidden` card-list view rather than horizontal scrolling — both render from the same data, with `hidden`/`sm:table`/`sm:hidden` controlling which is visible per breakpoint
 - Forgot-password shows the same "if an account exists, a reset link is on its way" message regardless of whether `resetPasswordForEmail` succeeds or the email is registered — prevents using the form to enumerate registered emails
 - Sign-up's success path resets `loading` back to `false` (unlike sign-in's) — the form stays mounted and switches modes instead of navigating away, so the button must return to its idle state
-- Pending manual step: `/auth/reset-password` (both `http://localhost:3000/auth/reset-password` and the deployed URL) needs to be added to Supabase's Authentication → URL Configuration → Redirect URLs allow-list, or the password-reset email link won't work. Not yet done as of 2026-06-10
+- The `/auth/reset-password` redirect URL is allow-listed in Supabase (Authentication → URL Configuration), and the forgot-password flow has been manually tested end-to-end (2026-06-10)
 - Tailwind v4 `--animate-*` tokens added to `app/globals.css` aren't picked up by Turbopack's dev server until it's restarted — if a new `animate-*` utility doesn't apply, restart `next dev` before debugging the CSS itself
 
 ## MVP Scope (Build This First, Nothing Else)
