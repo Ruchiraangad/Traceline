@@ -108,14 +108,6 @@ Blocked: Nothing
 
 Everything else (explanations, alerts, sharing, mobile) is post-MVP.
 
-## Background Context (How This Project Came About)
-Developer is working through a summer learning curriculum before school starts in September (~12 weeks). Goal is to build 1-2 real AI-native projects that ship and deploy. The three project categories being targeted are:
-1. RAG System — Traceline is this project
-2. Autonomous Agents — Prospektr (lead-gen pipeline) is the planned follow-up
-3. Eval Harness — future project
-
-IdeaBrowser.com was the source of initial idea discovery. Traceline was chosen because it teaches foundational engineering skills (file handling, database design, API integration, charting, auth) while having a real AI mechanic at its center.
-
 ## What Not To Do
 - Do not scaffold features outside the MVP scope without being asked
 - Do not use any ORM (use raw SQL or Supabase client directly)
