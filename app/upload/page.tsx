@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
+import Button from '@/components/ui/Button'
+import Card from '@/components/ui/Card'
 
 export default function UploadPage() {
   const router = useRouter()
@@ -47,15 +49,12 @@ export default function UploadPage() {
   return (
     <div className="min-h-screen bg-zinc-950">
       <div className="px-4 py-4">
-        <button
-          onClick={() => router.push('/')}
-          className="text-sm text-zinc-500 hover:text-zinc-100"
-        >
+        <Button variant="ghost" onClick={() => router.push('/')}>
           ← Back
-        </button>
+        </Button>
       </div>
       <div className="flex items-center justify-center px-4 pb-12">
-        <div className="w-full max-w-sm rounded-lg bg-zinc-900 p-8 border border-zinc-800">
+        <Card className="w-full max-w-sm bg-zinc-900 p-8">
           <h1 className="mb-6 text-xl font-semibold text-zinc-100">Upload a lab report</h1>
           <form onSubmit={handleUpload} className="flex flex-col gap-4">
             <input
@@ -64,20 +63,16 @@ export default function UploadPage() {
               onChange={e => setFile(e.target.files?.[0] ?? null)}
               className="text-sm text-zinc-400"
             />
-            <button
-              type="submit"
-              disabled={!file || loading}
-              className="rounded-md bg-white px-4 py-2 text-sm font-medium text-zinc-900 hover:bg-zinc-200 disabled:opacity-50"
-            >
+            <Button type="submit" disabled={!file || loading}>
               {loading ? 'Processing...' : 'Upload'}
-            </button>
+            </Button>
           </form>
           {status && (
             <p className={`mt-4 text-sm ${status.startsWith('Error') ? 'text-red-400' : 'text-green-400'}`}>
               {status}
             </p>
           )}
-        </div>
+        </Card>
       </div>
     </div>
   )
