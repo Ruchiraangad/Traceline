@@ -24,6 +24,7 @@ export default function UploadDetailPage({ uploadId }: UploadDetailPageProps) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   // Bumping this re-runs the effect below — used by ErrorState's retry button.
   const [retryCount, setRetryCount] = useState(0)
+  const [navigatingBack, setNavigatingBack] = useState(false)
 
   useEffect(() => {
     async function load() {
@@ -108,7 +109,7 @@ export default function UploadDetailPage({ uploadId }: UploadDetailPageProps) {
     <div className="min-h-screen bg-zinc-950 text-zinc-100">
       <div className="border-b border-zinc-800 bg-zinc-900/50">
         <div className="mx-auto max-w-3xl px-4 py-3 flex items-center justify-between">
-          <Button variant="ghost" className="flex items-center gap-2" onClick={() => router.push('/')}>
+          <Button variant="ghost" className="flex items-center gap-2" loading={navigatingBack} onClick={() => { setNavigatingBack(true); router.push('/') }}>
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
@@ -138,8 +139,8 @@ export default function UploadDetailPage({ uploadId }: UploadDetailPageProps) {
                 })}
               </p>
             </div>
-            <Button variant="danger" onClick={() => setShowDeleteConfirm(true)} disabled={deleting}>
-              {deleting ? 'Deleting...' : 'Delete upload'}
+            <Button variant="danger" onClick={() => setShowDeleteConfirm(true)} loading={deleting}>
+              Delete upload
             </Button>
           </div>
           {deleteError && <p className="mt-3 text-sm text-red-400">{deleteError}</p>}

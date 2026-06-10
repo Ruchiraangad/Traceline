@@ -17,6 +17,8 @@ export default function DashboardPage() {
   const [error, setError] = useState<string | null>(null)
   // Bumping this re-runs the effect below — used by ErrorState's retry button.
   const [retryCount, setRetryCount] = useState(0)
+  // Tracks which nav button was clicked, so only that one shows a spinner.
+  const [navigatingTo, setNavigatingTo] = useState<string | null>(null)
 
   useEffect(() => {
     async function load() {
@@ -50,7 +52,13 @@ export default function DashboardPage() {
     setRetryCount(c => c + 1)
   }
 
+  function navigate(id: string, path: string) {
+    setNavigatingTo(id)
+    router.push(path)
+  }
+
   async function handleSignOut() {
+    setNavigatingTo('signout')
     await supabase.auth.signOut()
     router.push('/auth')
   }
@@ -73,13 +81,13 @@ export default function DashboardPage() {
         <div className="mb-8 flex items-center justify-between">
           <h1 className="text-2xl font-semibold">Traceline</h1>
           <div className="flex gap-3">
-            <Button variant="secondary" onClick={() => router.push('/chart')}>
+            <Button variant="secondary" loading={navigatingTo === 'trends'} onClick={() => navigate('trends', '/chart')}>
               Trends
             </Button>
-            <Button onClick={() => router.push('/upload')}>
+            <Button loading={navigatingTo === 'upload'} onClick={() => navigate('upload', '/upload')}>
               Upload
             </Button>
-            <Button variant="secondary" onClick={handleSignOut}>
+            <Button variant="secondary" loading={navigatingTo === 'signout'} onClick={handleSignOut}>
               Sign out
             </Button>
           </div>
@@ -91,7 +99,8 @@ export default function DashboardPage() {
             <Button
               variant="link"
               className="mt-4 underline hover:text-white"
-              onClick={() => router.push('/upload')}
+              loading={navigatingTo === 'upload-empty'}
+              onClick={() => navigate('upload-empty', '/upload')}
             >
               Upload your first lab report
             </Button>

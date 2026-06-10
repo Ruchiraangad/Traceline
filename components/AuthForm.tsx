@@ -25,10 +25,9 @@ export default function AuthForm() {
         ? await supabase.auth.signUp({ email, password })
         : await supabase.auth.signInWithPassword({ email, password })
 
-    setLoading(false)
-
     if (error) {
       setError(error.message)
+      setLoading(false)
       return
     }
 
@@ -66,8 +65,8 @@ export default function AuthForm() {
 
           {error && <p className="text-sm text-red-400">{error}</p>}
 
-          <Button type="submit" disabled={loading}>
-            {loading ? 'Please wait...' : mode === 'signin' ? 'Sign in' : 'Create account'}
+          <Button type="submit" loading={loading}>
+            {mode === 'signin' ? 'Sign in' : 'Create account'}
           </Button>
         </form>
 

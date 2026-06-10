@@ -34,8 +34,8 @@ export default function ConfirmDialog({
           <Button variant="secondary" onClick={onCancel} disabled={loading}>
             Cancel
           </Button>
-          <Button variant="danger" onClick={onConfirm} disabled={loading}>
-            {loading ? 'Deleting...' : confirmLabel}
+          <Button variant="danger" onClick={onConfirm} loading={loading}>
+            {confirmLabel}
           </Button>
         </div>
       </Card>

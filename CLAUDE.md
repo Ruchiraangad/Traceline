@@ -82,6 +82,9 @@ Blocked: Nothing
 - components/DashboardPage.tsx, TrendsPage.tsx, AuthForm.tsx — page-level components (app/*/page.tsx are now thin wrappers around these); dashboard and trends show an error state with retry on a failed Supabase query
 - components/UploadDetailPage.tsx + app/uploads/[id]/page.tsx — per-upload page listing its biomarkers, with a delete flow (removes the upload and its biomarker rows, with confirmation)
 - lib/extract.ts — biomarkers are validated individually against a zod schema; malformed entries are logged and dropped instead of discarding the whole batch
+- components/ui/Button.tsx — `loading` prop shows a centered spinner in place of the label (label kept via `invisible` so the button doesn't resize); `disabled:opacity-50 disabled:cursor-not-allowed` now applied consistently across all variants
+- components/ui/ProgressBar.tsx — thin indeterminate progress bar (custom `animate-progress-indeterminate` keyframe in app/globals.css)
+- Loading feedback added to every async/navigation button: sign in/up, dashboard nav (Trends/Upload/Sign out), back buttons, delete confirmation; upload page shows the progress bar + "Retrieving your data..." while Claude extracts biomarkers
 
 ## Key Technical Decisions
 - Dropped pdf-parse text extraction in favour of Claude's native PDF document support — handles image-based and text-based PDFs equally
@@ -92,6 +95,7 @@ Blocked: Nothing
 - `unit` accepts an empty string — some results (ratios, pH) are genuinely unitless, and the database column doesn't require non-empty
 - Destructive actions (deleting an upload) use a custom ConfirmDialog, not the browser's `confirm()`
 - Deleting an upload removes its `biomarkers` rows before the `uploads` row — no DB-level cascade is assumed
+- A button's `loading` state must NOT be cleared before a successful `router.push` — clearing it first causes a visible flash back to the idle label right before navigation. Only reset loading state on error paths; on success let it persist until the page unmounts
 
 ## MVP Scope (Build This First, Nothing Else)
 1. User auth (Supabase handles this)

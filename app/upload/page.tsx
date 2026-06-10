@@ -5,12 +5,14 @@ import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
+import ProgressBar from '@/components/ui/ProgressBar'
 
 export default function UploadPage() {
   const router = useRouter()
   const [file, setFile] = useState<File | null>(null)
   const [status, setStatus] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [navigatingBack, setNavigatingBack] = useState(false)
 
   async function handleUpload(e: React.FormEvent) {
     e.preventDefault()
@@ -36,10 +38,10 @@ export default function UploadPage() {
     })
 
     const result = await response.json()
-    setLoading(false)
 
     if (!response.ok) {
       setStatus(`Error: ${result.error}`)
+      setLoading(false)
       return
     }
 
@@ -49,7 +51,7 @@ export default function UploadPage() {
   return (
     <div className="min-h-screen bg-zinc-950">
       <div className="px-4 py-4">
-        <Button variant="ghost" onClick={() => router.push('/')}>
+        <Button variant="ghost" loading={navigatingBack} onClick={() => { setNavigatingBack(true); router.push('/') }}>
           ← Back
         </Button>
       </div>
@@ -63,10 +65,16 @@ export default function UploadPage() {
               onChange={e => setFile(e.target.files?.[0] ?? null)}
               className="text-sm text-zinc-400"
             />
-            <Button type="submit" disabled={!file || loading}>
-              {loading ? 'Processing...' : 'Upload'}
+            <Button type="submit" disabled={!file} loading={loading}>
+              Upload
             </Button>
           </form>
+          {loading && (
+            <div className="mt-4 flex flex-col gap-2">
+              <p className="text-sm text-zinc-400">Retrieving your data...</p>
+              <ProgressBar />
+            </div>
+          )}
           {status && (
             <p className={`mt-4 text-sm ${status.startsWith('Error') ? 'text-red-400' : 'text-green-400'}`}>
               {status}
