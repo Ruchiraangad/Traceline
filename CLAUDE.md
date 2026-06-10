@@ -98,6 +98,7 @@ Blocked: Nothing
 - app/layout.tsx + app/globals.css — added Space Grotesk as a second font (`--font-space-grotesk` variable, exposed as the `font-heading` Tailwind utility); applied to `PageHeader`'s `<h1>`, DashboardPage's wordmark, and AuthLayout's wordmark
 - components/ui/Logo.tsx — SVG mark (circle + 4-pointed compass star) in a `bg-white` rounded-square badge with a zinc-900 icon, matching the app's existing white/zinc palette; used next to the "trace"/"line" wordmark on the dashboard only
 - AuthLayout's "trace"/"line" wordmark now uses `font-heading` with no gap between the two words, and has no logo/icon next to it
+- app/icon.png (the Logo mark) replaces the default Next.js favicon; app/layout.tsx's `metadata` title/description were changed from the Create Next App defaults to "Traceline" and a real description; app/opengraph-image.png (1200x630) was added so links shared on LinkedIn/Slack render a branded preview card
 
 ## Key Technical Decisions
 - Dropped pdf-parse text extraction in favour of Claude's native PDF document support — handles image-based and text-based PDFs equally
@@ -120,6 +121,8 @@ Blocked: Nothing
 - TrendsPage keeps neither `animate-fade-slide-in` nor `isAnimationActive={false}` on `<Line>` — both were tried and reverted. Recharts' `<Line>` already animates its data line in over ~1.5s by default; layering a CSS fade on top of that made the chart area feel slower to appear, not faster
 - Logo (white badge + circle/star SVG) is dashboard-only — the auth page keeps just the wordmark, no icon. Logo colors are monochrome (white badge, zinc-900 icon) to match the app's existing palette rather than introduce a new accent color
 - `font-heading` (Space Grotesk) is applied only to page-title-level headings (`PageHeader`'s `<h1>`, Dashboard's wordmark, AuthLayout's wordmark) — body text stays on Geist Sans
+- Next.js's `favicon` file convention only auto-detects `.ico` — a `.png` named `favicon.png` is silently ignored. The Logo mark is saved as `app/icon.png` instead, which Next.js recognizes for any image format and uses to auto-generate `<link rel="icon">`
+- `app/opengraph-image.png` follows the same file-convention pattern as `icon.png` — Next.js auto-generates the `og:image` meta tag from its presence, no metadata code needed
 
 ## MVP Scope (Build This First, Nothing Else)
 1. User auth (Supabase handles this)
