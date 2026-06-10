@@ -109,7 +109,7 @@ export default function UploadDetailPage({ uploadId }: UploadDetailPageProps) {
     <div className="min-h-screen bg-zinc-950 text-zinc-100">
       <PageHeader title="Upload details" backHref="/" maxWidthClassName="max-w-3xl" />
 
-      <div className="mx-auto max-w-3xl px-4 py-12">
+      <div className="mx-auto max-w-3xl px-4 py-12 animate-fade-slide-in">
         <Card className="mb-6 bg-zinc-900 p-5">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div className="min-w-0 sm:flex-1">

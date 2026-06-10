@@ -77,7 +77,7 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100">
-      <div className="mx-auto max-w-2xl px-4 py-12">
+      <div className="mx-auto max-w-2xl px-4 py-12 animate-fade-slide-in">
         <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <h1 className="text-2xl font-semibold">Traceline</h1>
           <div className="flex gap-3">

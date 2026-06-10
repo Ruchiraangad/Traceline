@@ -75,7 +75,9 @@ export default function ResetPasswordForm() {
   if (status === 'checking') {
     return (
       <AuthLayout>
-        <p className="text-center text-sm text-zinc-500">Verifying your reset link...</p>
+        <div key={status} className="animate-fade-slide-in">
+          <p className="text-center text-sm text-zinc-500">Verifying your reset link...</p>
+        </div>
       </AuthLayout>
     )
   }
@@ -83,44 +85,50 @@ export default function ResetPasswordForm() {
   if (status === 'invalid') {
     return (
       <AuthLayout>
-        <p className="mb-4 text-center text-sm text-zinc-400">
-          This password reset link is invalid or has expired.
-        </p>
-        <Button className="w-full" onClick={() => router.push('/auth')}>
-          Back to sign in
-        </Button>
+        <div key={status} className="animate-fade-slide-in">
+          <p className="mb-4 text-center text-sm text-zinc-400">
+            This password reset link is invalid or has expired.
+          </p>
+          <Button className="w-full" onClick={() => router.push('/auth')}>
+            Back to sign in
+          </Button>
+        </div>
       </AuthLayout>
     )
   }
 
   return (
     <AuthLayout>
-      <h1 className="mb-6 text-center text-sm font-medium text-zinc-400">
-        Set a new password
-      </h1>
+      {/* Keying on `status` remounts this block when the link finishes
+          verifying, replaying the fade-slide-in animation. */}
+      <div key={status} className="animate-fade-slide-in">
+        <h1 className="mb-6 text-center text-sm font-medium text-zinc-400">
+          Set a new password
+        </h1>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <Input
-          type="password"
-          placeholder="New password"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          required
-        />
-        <Input
-          type="password"
-          placeholder="Confirm new password"
-          value={confirmPassword}
-          onChange={e => setConfirmPassword(e.target.value)}
-          required
-        />
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <Input
+            type="password"
+            placeholder="New password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            required
+          />
+          <Input
+            type="password"
+            placeholder="Confirm new password"
+            value={confirmPassword}
+            onChange={e => setConfirmPassword(e.target.value)}
+            required
+          />
 
-        {error && <p className="text-sm text-red-400">{error}</p>}
+          {error && <p className="text-sm text-red-400">{error}</p>}
 
-        <Button type="submit" loading={loading}>
-          Update password
-        </Button>
-      </form>
+          <Button type="submit" loading={loading}>
+            Update password
+          </Button>
+        </form>
+      </div>
     </AuthLayout>
   )
 }

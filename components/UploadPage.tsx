@@ -106,7 +106,7 @@ export default function UploadPage() {
     <div className="min-h-screen bg-zinc-950 text-zinc-100">
       <PageHeader title="Upload" backHref="/" maxWidthClassName="max-w-2xl" />
 
-      <div className="mx-auto max-w-2xl px-4 py-12">
+      <div className="mx-auto max-w-2xl px-4 py-12 animate-fade-slide-in">
         <Card className="bg-zinc-900 p-6 sm:p-8">
           <p className="mb-6 text-sm text-zinc-400">
             Drop in lab report PDFs from any provider — Quest, LabCorp, or your hospital portal.
