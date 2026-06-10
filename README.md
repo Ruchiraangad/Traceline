@@ -4,7 +4,7 @@ Upload a blood test PDF from any lab, whether it's Quest, LabCorp, or a hospital
 
 ---
 
-## Demo
+## Screenshots
 
 <table>
   <tr>
@@ -16,7 +16,7 @@ Upload a blood test PDF from any lab, whether it's Quest, LabCorp, or a hospital
   </tr>
 </table>
 
-*(Live demo: coming soon)*
+**Live app:** [traceline-six.vercel.app](https://traceline-six.vercel.app)
 
 ---
 
