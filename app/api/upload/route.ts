@@ -34,7 +34,15 @@ export async function POST(request: NextRequest) {
 
   // Pass the PDF buffer directly to Claude — no text extraction step needed
   const buffer = Buffer.from(await file.arrayBuffer())
-  const biomarkers = await extractBiomarkers(buffer)
+
+  let biomarkers
+  try {
+    biomarkers = await extractBiomarkers(buffer)
+  } catch (err) {
+    console.error('Extraction error:', err)
+    return NextResponse.json({ error: 'Could not read biomarkers from this PDF' }, { status: 422 })
+  }
+
   if (biomarkers.length === 0) {
     return NextResponse.json({ error: 'No biomarkers found in this PDF' }, { status: 422 })
   }
