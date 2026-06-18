@@ -1,4 +1,4 @@
-Copyright (c) 2026 Ruchiraangad Reddy Sangala
+Required Notice: Copyright (c) 2026 Ruchiraangad Reddy Sangala
 
 # PolyForm Noncommercial License 1.0.0
 
