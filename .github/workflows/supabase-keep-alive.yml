@@ -1,0 +1,34 @@
+name: Supabase keep-alive
+
+on:
+  schedule:
+    # Four reads a day, away from the busiest minute of the hour (UTC).
+    - cron: '17 */6 * * *'
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  keep-alive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Read from Supabase
+        shell: bash
+        env:
+          SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+        run: |
+          : "${SUPABASE_URL:?Set the NEXT_PUBLIC_SUPABASE_URL repository secret}"
+          : "${SUPABASE_ANON_KEY:?Set the NEXT_PUBLIC_SUPABASE_ANON_KEY repository secret}"
+
+          # Query Postgres through the Data API; RLS still applies, even if it returns [].
+          # Discard the response so upload identifiers never appear in workflow logs.
+          curl --fail --silent --show-error \
+            --retry 3 --retry-all-errors --retry-delay 5 \
+            --connect-timeout 10 --max-time 30 \
+            --output /dev/null \
+            --header "apikey: ${SUPABASE_ANON_KEY}" \
+            "${SUPABASE_URL%/}/rest/v1/uploads?select=id&limit=1"
+
+          echo "Supabase database read succeeded."

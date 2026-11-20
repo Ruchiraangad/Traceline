@@ -69,6 +69,33 @@ Trend charts (Recharts)
 
 ---
 
+## Keeping Supabase Active
+
+The [Supabase keep-alive workflow](.github/workflows/supabase-keep-alive.yml) queries
+the `uploads` table every six hours using the app's public key. Row-level security
+still applies, so an empty result is valid. The response is discarded rather than
+printed in the workflow logs.
+
+To activate it:
+
+1. Add `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` as
+   [GitHub Actions repository secrets](https://github.com/Ruchiraangad/Traceline/settings/secrets/actions),
+   using the same values as `.env.local` or your deployment.
+2. Push the workflow to the repository's default branch and enable GitHub Actions
+   if needed.
+3. If Supabase is already paused, resume it in the Supabase dashboard first.
+4. Under **Actions → Supabase keep-alive**, choose **Run workflow** and check that
+   the database read succeeds.
+
+Supabase says a few database requests each day are typically enough to avoid
+[Free plan inactivity pauses](https://supabase.com/docs/guides/platform/free-project-pausing),
+but this is not guaranteed. GitHub also
+[disables scheduled workflows in public repositories after 60 days without repository activity](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule).
+Re-enable the workflow if that happens; use an external scheduler if the repository
+will remain idle for longer periods.
+
+---
+
 ## Future Work
 
 - Natural language querying ("how's my cholesterol trending?")
